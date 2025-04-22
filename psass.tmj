@@ -1411,7 +1411,7 @@
         {
          "name":"mapImage",
          "type":"string",
-         "value":"map.png"
+         "value":"psass.png"
         }, 
         {
          "name":"mapName",

@@ -1335,7 +1335,7 @@
         {
          "name":"mapImage",
          "type":"string",
-         "value":"map.png"
+         "value":"library.png"
         }, 
         {
          "name":"mapName",
