@@ -6497,7 +6497,7 @@
         {
          "columns":16,
          "firstgid":101007,
-         "image":"..\/..\/..\/..\/..\/..\/..\/Downloads\/moderninteriors-win\/1_Interiors\/32x32\/Interiors_32x32.png",
+         "image":"tilesets\/Interiors_32x32.png",
          "imageheight":34048,
          "imagewidth":512,
          "margin":0,
@@ -6510,7 +6510,7 @@
         {
          "columns":40,
          "firstgid":118031,
-         "image":"..\/..\/..\/..\/..\/..\/..\/Downloads\/moderninteriors-win\/1_Interiors\/32x32\/Old_Stuff\/Tilesets_32x32.png",
+         "image":"tilesets\/Tilesets_32x32.png",
          "imageheight":2240,
          "imagewidth":1280,
          "margin":0,
