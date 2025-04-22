@@ -1545,7 +1545,7 @@
         {
          "columns":16,
          "firstgid":81342,
-         "image":"..\/..\/..\/..\/..\/..\/..\/Downloads\/moderninteriors-win\/1_Interiors\/32x32\/Interiors_32x32.png",
+         "image":"tilesets\/Interiors_32x32.png",
          "imageheight":34048,
          "imagewidth":512,
          "margin":0,
@@ -1558,7 +1558,7 @@
         {
          "columns":76,
          "firstgid":98366,
-         "image":"..\/..\/..\/..\/..\/..\/..\/Downloads\/moderninteriors-win\/1_Interiors\/32x32\/Room_Builder_32x32.png",
+         "image":"tilesets\/Room_Builder_32x32.png",
          "imageheight":3616,
          "imagewidth":2432,
          "margin":0,
