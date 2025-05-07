@@ -26,19 +26,56 @@ function openRoleView(newRole?: string) {
 }
 
 // Open the waiting view
-function openWaitingView(toggleValue: boolean) {
-    if(!toggleValue){
-        WA.ui.modal.closeModal();
-        return;
-    }
-
+function openWaitingView() {
     WA.ui.modal.openModal({
         allowApi: true,
         position: "center",
         allow: "fullscreen",
         src: `${host}/pages/waitingRoom.html`,
-        title: "Waiting Room"
+        title: "Waiting Room",
+    }, 
+    () => {
+        console.log("WA.state.startGame", WA.state.startGame);
+        console.log("WA.state.leaderUuid", WA.state.leaderUuid);
     });
+}
+
+function addButtonCreateGame(){
+    // Close button if it exists
+    WA.ui.actionBar.removeButton('game-btn');
+    setTimeout(() => {
+        // Add button to start the game
+        WA.ui.actionBar.addButton({
+            id: 'game-btn',
+            // @ts-ignore
+            label: 'Create the game',
+            callback: async () => {
+                await WA.state.saveVariable('leaderUuid', WA.player.uuid);
+                WA.state.startGame = true;
+                openWaitingView();
+                addButtonEndGame();
+            }
+        });
+    }, 100);
+}
+
+function addButtonEndGame(){
+    // Close button if it exists
+    WA.ui.actionBar.removeButton('game-btn');
+    setTimeout(() => {
+        // Add button to end the game
+        WA.ui.actionBar.addButton({
+            id: 'game-btn',
+            // @ts-ignore
+            label: 'End the game',
+            callback: async () => {
+                await WA.state.saveVariable('leaderUuid', undefined);
+                WA.state.startGame = false;
+                WA.ui.modal.closeModal();
+                addButtonCreateGame();
+            }
+        });
+    }, 100);
 }
 
 // Open the night view
@@ -90,22 +127,43 @@ function voteView(toggleValue: boolean) {
 export function initGame(){
     initVariable();
 
+    console.log("WA.state.startGame", WA.state.startGame);
+    console.log("WA.state.leaderUuid", WA.state.leaderUuid);
+    const startGame = WA.state.loadVariable('startGame');
+    console.log("startGame", startGame);
     // Add button to start the game
-    WA.ui.actionBar.addButton({
-        id: 'game-btn',
-        // @ts-ignore
-        label: 'Create the game',
-        callback: () => {
-            WA.state.leaderUuid = WA.player.uuid;
-            WA.state.startGame = true;
-            openWaitingView(true);
+    if(WA.state.leaderUuid == WA.player.uuid) addButtonEndGame();
+    if(WA.state.startGame) {
+        openWaitingView();
+    } else {
+        addButtonCreateGame();
+    }
+
+
+    WA.state.onVariableChange("startGame").subscribe(() => {
+        if(WA.state.startGame) {
+            openWaitingView();
+            // remove button create game
+            WA.ui.actionBar.removeButton('game-btn');
+        } else {
+            WA.ui.modal.closeModal();
+            // add button create game
+            addButtonCreateGame();
         }
     });
-
-    WA.state.onVariableChange("startGame").subscribe.bind(openWaitingView);
-    WA.state.onVariableChange("night").subscribe.bind(openNightView);
-    WA.state.onVariableChange("day").subscribe.bind(openDayView);
-    WA.state.onVariableChange("role").subscribe.bind(openRoleView);
-    WA.state.onVariableChange("vote").subscribe.bind(voteView);
-    WA.state.onVariableChange("endGame").subscribe.bind(endGameView);
+    WA.state.onVariableChange("night").subscribe((value) => {
+        openNightView(value as boolean);
+    });
+    WA.state.onVariableChange("day").subscribe((value) => {
+        openDayView(value as boolean);
+    });
+    WA.state.onVariableChange("vote").subscribe((value) => {
+        voteView(value as boolean);
+    });
+    WA.state.onVariableChange("endGame").subscribe((value) => {
+        endGameView(value as boolean);
+    });
+    WA.player.state.onVariableChange("role").subscribe((value) => {
+        openRoleView(value as string);
+    });
 }

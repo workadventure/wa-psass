@@ -49,7 +49,7 @@ WA.onInit().then(() => {
     });
 
     // The line below bootstraps the Scripting API Extra library that adds a number of advanced properties/features to WorkAdventure
-    bootstrapExtra().then(() => {
+    bootstrapExtra().then(async () => {
         console.log('Scripting API Extra ready');
 
         // Init the loup garou game
