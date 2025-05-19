@@ -6,18 +6,27 @@
         <meta name="title" content="My inventory">
 
         <title>Werewolves</title>
+        <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
         <link rel="stylesheet" href="main.css">
-
         <script src="https://play.staging.workadventu.re/iframe_api.js"></script>
-        <script src="./waitingRoom.ts"></script>
+        <script src="./waitingRoom.ts" type="module"></script>
     </head>
     <body>
         <div class="bg-black/80 w-full h-full flex flex-col items-center justify-center">
             <div class="flex flex-col items-center justify-center">
-                <h1 class="text-3xl text-white">Waiting room</h1>
-                <p class="text-white text-center">You are in the waiting room. Please wait for the game to start.</p>
-                <div id="characters" class="flex flex-wrap gap-2">
+                <h1 class="text-3xl text-white">Bienvenue dans le village !</h1>
+                <p class="text-white text-center">Le jeu commencera dès que le Leader lancera la partie.</p>
+                <p class="text-white text-center">Profitez-en pour faire connaissance, observer qui est qui… ou prétendre être quelqu’un d’autre 👀</p>
+                <div id="characters" class="flex flex-wrap gap-2 p-2 mt-4">
+                    <!-- Character cards will be dynamically inserted here -->
                 </div>
+                <div id="start-game" class="text-center hidden">
+                    <p>Quand tout le monde est prêt, clique sur “Lancer la partie” pour attribuer les rôles et commencer la partie.</p>
+                    <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded cursor-pointer" id="start-game-button">
+                        Lancer la partie
+                    </button>
+                </div>
+                <p id="error-message" class="text-red-500 text-center mt-4"></p>
             </div>
         </div>
     </body>

@@ -1,7 +1,7 @@
 import { DayScene } from "./DayScene";
 import { NightScene } from "./NightScene";
 import { RoleScene } from "./RoleScene";
-import { host, initVariable } from "./variable";
+import { acceptableTimeOut, host, initVariable } from "./variable";
 
 export const role = {
     wolf: "WOLF",
@@ -11,18 +11,34 @@ export const role = {
     leader: "LEADER",
 }
 
-const dayScene = new DayScene();
-const nightScene = new NightScene();
+export const isLeader = () => {
+    return WA.state.leaderUuid != undefined && WA.state.leaderUuid === WA.player.uuid;
+}
+
+export const isVillager = (role_: string) => {
+    return role_ === role.villager;
+}
+
+export const isWolf = (role_: string) => {
+    return role_ === role.wolf;
+}
+
+export const isYoungGirl = (role_: string) => {
+    return role_ === role.youggirl;
+}
 
 // Open the role view
 let roleView: RoleScene | undefined;
-function openRoleView(newRole?: string) {
-    if(newRole == undefined) {
-        if(roleView) roleView.close();
-        return;
+function toggleRoleView(toggleValue: boolean) {
+    if(roleView == undefined) {
+        roleView = new RoleScene();
     }
 
-    roleView = new RoleScene();
+    if(toggleValue == false && roleView.active == true) {
+        roleView.end();
+    }else if (toggleValue == true && roleView.active == false) {
+        roleView.start();
+    }
 }
 
 // Open the waiting view
@@ -33,30 +49,27 @@ function openWaitingView() {
         allow: "fullscreen",
         src: `${host}/pages/waitingRoom.html`,
         title: "Waiting Room",
-    }, 
-    () => {
-        console.log("WA.state.startGame", WA.state.startGame);
-        console.log("WA.state.leaderUuid", WA.state.leaderUuid);
     });
 }
 
 function addButtonCreateGame(){
     // Close button if it exists
     WA.ui.actionBar.removeButton('game-btn');
+    WA.ui.actionBar.removeButton('night-btn');
+    WA.ui.actionBar.removeButton('day-btn');
     setTimeout(() => {
         // Add button to start the game
         WA.ui.actionBar.addButton({
             id: 'game-btn',
             // @ts-ignore
-            label: 'Create the game',
+            label: 'Loup garou 🐺',
             callback: async () => {
                 await WA.state.saveVariable('leaderUuid', WA.player.uuid);
                 WA.state.startGame = true;
                 openWaitingView();
-                addButtonEndGame();
             }
         });
-    }, 100);
+    }, acceptableTimeOut);
 }
 
 function addButtonEndGame(){
@@ -67,103 +80,133 @@ function addButtonEndGame(){
         WA.ui.actionBar.addButton({
             id: 'game-btn',
             // @ts-ignore
-            label: 'End the game',
+            label: 'Finir la partie ❌',
             callback: async () => {
                 await WA.state.saveVariable('leaderUuid', undefined);
                 WA.state.startGame = false;
-                WA.ui.modal.closeModal();
-                addButtonCreateGame();
             }
         });
-    }, 100);
+    }, acceptableTimeOut);
 }
 
 // Open the night view
-function openNightView(toggleValue: boolean) {
-    if(!toggleValue){
-        nightScene.end();
-        return;
+let nightScene: NightScene | undefined;
+function toggleNightView(toggleValue: boolean) {
+    console.log('toggleNightView', toggleValue, nightScene?.active);
+    if(nightScene == undefined) {
+        nightScene = new NightScene();
     }
-    nightScene.start();
+    if(toggleValue == false && nightScene.active == true){
+        nightScene.end();
+    }else if(toggleValue == true && nightScene.active == false){
+        nightScene.start();
+    }
 }
 
 // Open the day view
-function openDayView(toggleValue: boolean) {
-    if(!toggleValue){
+let dayScene : DayScene | undefined;
+function toggleDayView(toggleValue: boolean) {
+    if(dayScene == undefined) {
+        dayScene = new DayScene();
+    }
+    if(toggleValue == false && dayScene.active == true){
         dayScene.end();
-        return;
+    }else if(toggleValue == true && dayScene.active == false){
+        dayScene.start();
     }
-    dayScene.start();
-}
-
-function endGameView(toggleValue: boolean) {
-    if(!toggleValue){
-        WA.ui.modal.closeModal();
-        return;
-    }
-    WA.ui.modal.openModal({
-        allowApi: true,
-        position: "center",
-        allow: "fullscreen",
-        src: "/pages/endgame.html",
-        title: "End Game"
-    });
-}
-
-function voteView(toggleValue: boolean) {
-    if(!toggleValue){
-        WA.ui.modal.closeModal();
-        return;
-    }
-    WA.ui.modal.openModal({
-        allowApi: true,
-        position: "center",
-        allow: "fullscreen",
-        src: "/pages/vote.html",
-        title: "Vote"
-    });
 }
 
 export function initGame(){
     initVariable();
 
-    console.log("WA.state.startGame", WA.state.startGame);
-    console.log("WA.state.leaderUuid", WA.state.leaderUuid);
-    const startGame = WA.state.loadVariable('startGame');
-    console.log("startGame", startGame);
-    // Add button to start the game
-    if(WA.state.leaderUuid == WA.player.uuid) addButtonEndGame();
-    if(WA.state.startGame) {
+    if( WA.player.state.role != undefined && WA.state.startGame) {
+        // Restart the game
+        if(WA.state.night) {
+            toggleNightView(true);
+        }else if(WA.state.day) {
+            toggleDayView(true);
+        }else{
+            toggleRoleView(true);
+        }
+
+        // Add button to ends the game if the current player is the leader
+        if(isLeader()) addButtonEndGame();
+    }else if(WA.state.startGame) {
+        // Open waiting view
         openWaitingView();
-    } else {
+
+        // Add button to ends the game if the current player is the leader
+        if(isLeader()) addButtonEndGame();
+    }else{
+        // Add button to start the game
         addButtonCreateGame();
     }
+        
 
-
-    WA.state.onVariableChange("startGame").subscribe(() => {
-        if(WA.state.startGame) {
+    WA.state.onVariableChange("startGame").subscribe((value) => {
+        console.log("startGame => onVariableChange => ", value);
+        if(value == true) {
             openWaitingView();
-            // remove button create game
-            WA.ui.actionBar.removeButton('game-btn');
+            // Add button to ends the game if the current player is the leader
+            if(isLeader()) addButtonEndGame();
         } else {
+            // Close all websites
+            WA.ui.website.getAll().then((websites) => {
+                websites.forEach((website) => {
+                    website.close();
+                });
+            });
+            // Close modal
             WA.ui.modal.closeModal();
+
+            // Close all scene
+            toggleRoleView(false);
+            toggleDayView(false);
+            toggleNightView(false);
+
             // add button create game
             addButtonCreateGame();
         }
     });
     WA.state.onVariableChange("night").subscribe((value) => {
-        openNightView(value as boolean);
+        console.info("Is the Night", value);
+        toggleNightView(value as boolean);
     });
-    WA.state.onVariableChange("day").subscribe((value) => {
-        openDayView(value as boolean);
+        WA.state.onVariableChange("day").subscribe((value) => {
+        console.info("Is the Day", value);
+        toggleDayView(value as boolean);
     });
-    WA.state.onVariableChange("vote").subscribe((value) => {
-        voteView(value as boolean);
-    });
-    WA.state.onVariableChange("endGame").subscribe((value) => {
-        endGameView(value as boolean);
-    });
-    WA.player.state.onVariableChange("role").subscribe((value) => {
-        openRoleView(value as string);
+    WA.state.onVariableChange("roles").subscribe((value) => {
+        console.log("roles => onVariableChange => ", value);
+        const { villagers, werewolfs, yougGirl, leader } = value as { villagers: any; werewolfs: any; yougGirl: any; leader: any };
+        // Add logic here to handle members and werewolfs
+        let role_ = undefined;
+        if(werewolfs.includes(WA.player.uuid)) role_ = role.wolf;
+        else if(villagers.includes(WA.player.uuid)) role_ = role.villager;
+        else if(yougGirl === WA.player.uuid) role_ = role.youggirl;
+        else if(leader === WA.player.uuid) role_ = role.leader;
+        WA.player.state.saveVariable('role', role_ ,{
+            public: false,
+            persist: true,
+            scope: 'room',
+        });
+
+        // Close waiting modal
+        WA.ui.modal.closeModal();
+
+        // Open role view
+        toggleRoleView(true);
+
+        if(isLeader())
+            WA.ui.actionBar.addButton({
+                id: 'night-btn',
+                // @ts-ignore
+                label: 'LA NUIT TOMBE 🌛',
+                callback: () => {
+                    console.log("Night");
+                    WA.state.saveVariable('day', false);
+                    WA.state.saveVariable('night', true);
+                }
+            });
     });
 }

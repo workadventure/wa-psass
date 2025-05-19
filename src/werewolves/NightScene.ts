@@ -1,11 +1,13 @@
 import { Sound } from "@workadventure/iframe-api-typings";
-import { role } from "./main";
+import { isLeader, role } from "./main";
+import { acceptableTimeOut, host } from "./variable";
 
 export class NightScene {
     private sound: Sound;
     private config: any;
 
     private showLayers = ['Night', 'NightItems'];
+    private isActive = false;
 
     constructor() {
         this.sound = WA.sound.loadSound("night.mp3");
@@ -20,39 +22,70 @@ export class NightScene {
         };
     }
 
-    public start() {
-        this.showLayers.forEach(layer => WA.room.showLayer(layer));
+    public async start() {
+        // Layer of the map
+        this.showLayers.forEach(layer => WA.room.showLayer(layer))
+        
+         WA.ui.modal.closeModal();
+         WA.ui.actionBar.removeButton('night-btn');
+
         this.sound.play(this.config);
 
         // Open the popup
-        let src = "pages/night/villagerInstruction.html";
+        const asset = `${host}/pages/night`;
+        let src = `${asset}/villagerInstruction.html`;
         switch (WA.player.state.role) {
             case role.wolf:
-                src = "pages/night/wolfInstruction.html";
+                src = `${asset}/wolfInstruction.html`;
                 break;
             case role.hunter:
-                src = "pages/night/hunterInstruction.html";
+                src = `${asset}/hunterInstruction.html`;
                 break;
             case role.leader:
-                src = "pages/night/leaderInstruction.html";
+                src = `${asset}/leaderInstruction.html`;
                 break;
             case role.youggirl:
-                src = "pages/night/younggirlInstruction.html";
+                src = `${asset}/younggirlInstruction.html`;
+                break;
+            case role.villager:
+                src = `${asset}/villagerInstruction.html`;
                 break;
         }
 
-        WA.ui.modal.openModal({
-            allowApi: true,
-            position: "center",
-            allow: "fullscreen",
-            src: src,
-            title: "Night"
-        });
+        setTimeout(() => {
+            WA.ui.modal.openModal({
+                allowApi: true,
+                position: "left",
+                allow: "fullscreen",
+                src: src,
+                title: "Night"
+            });
+        }, acceptableTimeOut);
+
+        if(isLeader())
+            WA.ui.actionBar.addButton({
+                id: 'day-btn',
+                // @ts-ignore
+                label: 'LE JOUR SE LÈVE ☀️',
+                callback: () => {
+                    WA.state.day = true;
+                    WA.state.night = false;
+                }
+            });
+
+        this.isActive = true;
     }
 
     public end(){
         this.showLayers.forEach(layer => WA.room.hideLayer(layer));
+        console.log("this sound", this.sound);
         this.sound.stop();
         WA.ui.modal.closeModal();
+        if(WA.player.state.role === role.leader) WA.ui.actionBar.removeButton('day-btn');
+        this.isActive = false;
+    }
+
+    get active(){
+        return this.isActive;
     }
 }

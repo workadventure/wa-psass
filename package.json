@@ -3,10 +3,10 @@
   "version": "3.3.2",
   "license": "MIT",
   "scripts": {
-    "dev": "vite",
-    "start": "vite",
-    "build": "tsc && vite build && cp map.wam dist/map.wam",
-    "prod": "vite preview"
+    "dev": "vite --mode development",
+    "start": "vite --mode development",
+    "build": "tsc && vite build --mode production && cp map.wam dist/map.wam",
+    "prod": "vite --mode production preview"
   },
   "devDependencies": {
     "@types/node": "^18.15.11",

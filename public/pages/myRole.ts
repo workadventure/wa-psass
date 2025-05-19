@@ -1,30 +1,50 @@
 /// <reference types="@workadventure/iframe-api-typings" />
 
-export const isLeader = () => {
-    return WA.state.leaderUuid != undefined && WA.state.leaderUuid === WA.player.uuid;
-}
+import { host } from "../../src/werewolves/variable";
+import { isLeader, isVillager, isWolf, isYoungGirl, role } from "../../src/werewolves/main";
 
-export const isVillager = () => {
-    return WA.player.state.role === 'villager';
-}
+function initMyRoleCard(){
+    const img = document.getElementById('my-role');
+    const roleDescription = document.getElementById('role-description');
+    const roleTitle = document.getElementById('role-title');
+    if(!img || !roleDescription || !roleTitle) return;
 
-export const isWolf = () => {
-    return WA.player.state.role === 'wolf';
-}
-
-export const isYoungGirl = () => {
-    return WA.player.state.role === 'youggirl';
+    const role = WA.player.state.role;
+    const asset = `${host}/public`;
+    // @ts-ignore
+    if(isWolf(role)) {
+        // @ts-ignore
+        img.src = `${asset}/werewolf-illustration.jpg`;
+        roleDescription.innerText = "Chaque nuit, tu te réveilleras en secret avec les autres Loups-Garous pour choisir une victime. Ton objectif est d’éliminer tous les Villageois sans te faire démasquer.";
+        roleTitle.innerText = "Tu es un Loup-Garou 🐺";
+    }
+    // @ts-ignore
+    if (isVillager(role)) {
+        // @ts-ignore
+        img.src = `${asset}/villager-illustration.jpg`;
+        roleDescription.innerText = "Tu ne possèdes aucun pouvoir spécial, mais ta force est dans la discussion et la déduction. Ton but est de découvrir et éliminer les Loups-Garous.";
+        roleTitle.innerText = "Tu es un Villageois 👨‍🌾";
+    }
+    // @ts-ignore
+    if (isYoungGirl(role)) {
+        // @ts-ignore
+        img.src = `${asset}/younggirl-illustration.jpg`;
+        roleDescription.innerText = "La nuit, tu peux discrètement espionner les Loups-Garous pendant leur réunion. Mais attention ! Si tu te fais repérer, tu risques d’être leur prochaine cible…";
+        roleTitle.innerText = "Tu es la Petite Fille 👧";
+    }
+    if (isLeader()) {
+        // @ts-ignore
+        img.src = `${asset}/player-avatar.jpg`;
+        roleDescription.innerText = "Tu diriges le rythme du jeu (passage jour/nuit, validation des votes, etc.).";
+        roleTitle.innerText = "Tu es le Leader 🎩";
+    }
 }
 
 WA.onInit().then(() => {
-    console.info('Initiate Waiting Room');
+    console.info('Initiate MyRole Room');
 
+    initMyRoleCard();
     WA.player.state.onVariableChange('role').subscribe((role) => {
-        const img = document.getElementById('my-role') as HTMLImageElement;
-        img.classList.add('w-24', 'h-24', 'rounded-full');
-        if(isWolf()) img.src = "../werewolf-illustration.jpg";
-        if (isVillager()) img.src = "../hunter-illustration.jpg";
-        if (isYoungGirl()) img.src = "../younggirl-illustration.jpg";
-        if (isLeader()) img.src = "../leader-illustration.jpg";
-    })
+        initMyRoleCard()
+    });
 });

@@ -1,11 +1,14 @@
 import { Sound } from "@workadventure/iframe-api-typings";
-import { role } from "./main";
+import { isLeader, role } from "./main";
+import { acceptableTimeOut, host } from "./variable";
 
 export class DayScene {
     private sound: Sound;
     private config: any;
 
     private showLayers = ['Day', 'DayItems'];
+
+    private isActive = false;
 
     constructor() {
         this.sound = WA.sound.loadSound("day.mp3");
@@ -22,37 +25,71 @@ export class DayScene {
 
     public start() {
         this.showLayers.forEach(layer => WA.room.showLayer(layer));
+
+        WA.ui.modal.closeModal();
+        WA.ui.actionBar.removeButton('day-btn');
         this.sound.play(this.config);
 
         // Open the popup
-        let src = "pages/day/villagerInstruction.html";
+        const asset = `${host}/pages/day`;
+        let src = `${asset}/villagerInstruction.html`;
         switch (WA.player.state.role) {
             case role.wolf:
-                src = "pages/day/wolfInstruction.html";
+                src = `${asset}/wolfInstruction.html`;
                 break;
             case role.hunter:
-                src = "pages/day/hunterInstruction.html";
+                src = `${asset}/hunterInstruction.html`;
                 break;
             case role.leader:
-                src = "pages/day/leaderInstruction.html";
+                src = `${asset}/leaderInstruction.html`;
                 break;
             case role.youggirl:
-                src = "pages/day/younggirlInstruction.html";
+                src = `${asset}/younggirlInstruction.html`;
+                break;
+            case role.villager:
+                src = `${asset}/villagerInstruction.html`;
                 break;
         }
 
-        WA.ui.modal.openModal({
-            allowApi: true,
-            position: "center",
-            allow: "fullscreen",
-            src: src,
-            title: "Day"
-        });
+        console.log("start Day", src);
+        setTimeout(() => {
+            WA.ui.modal.openModal({
+                allowApi: true,
+                position: "left",
+                allow: "fullscreen",
+                src: src,
+                title: "Day"
+            });
+        }, acceptableTimeOut);
+
+        if(isLeader())
+            WA.ui.actionBar.addButton({
+                id: 'night-btn',
+                // @ts-ignore
+                label: 'LA NUIT TOMBE 🌛',
+                callback: () => {
+                    console.log("Night");
+                    WA.state.day = false;
+                    WA.state.night = true;
+                }
+            });
+        
+        this.isActive = true;
     }
 
     public end(){
         this.showLayers.forEach(layer => WA.room.hideLayer(layer));
         this.sound.stop();
         WA.ui.modal.closeModal();
+
+        // Layer of the map
+        WA.room.showLayer('Day');
+        WA.room.showLayer('DayItems');
+        if(WA.player.state.role === role.leader) WA.ui.actionBar.removeButton('night-btn');
+        this.isActive = false;
+    }
+
+    get active() {
+        return this.isActive;
     }
 }
