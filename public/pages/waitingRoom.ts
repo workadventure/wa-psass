@@ -14,7 +14,7 @@ async function addNewAttendee(player){
 
     const pAvatar = document.createElement('p');
     pAvatar.classList.add('text-white');
-    pAvatar.innerText = player.name;
+    pAvatar.innerText = `${player.uuid === WA.player.uuid ? 'Vous' :player.name}${isLeader() ? ' (leader)' : ''}`;
     pAvatar.id = player.uuid;
 
     const imgAvatar = document.createElement('img');
@@ -38,30 +38,6 @@ function updateAttendeesList(){
     console.log('players', players);
     for (const player of players) {
         addNewAttendee(player);
-    }
-}
-
-function updateLeader(){
-    // Add leader mention to the player
-    // @ts-ignore
-    const playerElement = document.getElementById(WA.state.leaderUuid);
-    if(playerElement) {
-        playerElement.innerText = playerElement.innerText + ' (leader)';
-        playerElement.classList.add('font-bold');
-    }
-
-    const startGameElement = document.getElementById('start-game');
-
-    if(isLeader()) {
-        if(startGameElement) startGameElement.classList.remove('hidden');
-
-        const startGameButton = document.getElementById('start-game-button');
-        if(startGameButton) startGameButton.addEventListener('click', allocateRoles);
-    }else{
-        if(startGameElement) startGameElement.classList.add('hidden');
-
-        const startGameButton = document.getElementById('start-game-button');
-        if(startGameButton) startGameButton.removeEventListener('click', allocateRoles);
     }
 }
 
@@ -160,10 +136,5 @@ WA.onInit().then(async () => {
     });
     WA.players.onPlayerLeaves.subscribe(() => {
         updateAttendeesList();
-    });
-
-    updateLeader();
-    WA.state.onVariableChange('leaderUuid').subscribe(() => {
-        updateLeader();
     });
 });
