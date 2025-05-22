@@ -128,22 +128,21 @@ function addNewRole(role_, nb){
     imgRole.classList.add('h-24');
     imgRole.classList.add('rounded-full');
 
-    const asset = `${host}/public`;
     switch (role_) {
         case role.leader:
-            imgRole.src = `${asset}/player-avatar.jpg`;
+            imgRole.src = `${host}/player-avatar.jpg`;
             pRole.innerText = `Leader (${nb})`;
             break;
         case role.wolf:
-            imgRole.src = `${asset}/werewolf-illustration.jpg`;
+            imgRole.src = `${host}/werewolf-illustration.jpg`;
             pRole.innerText = `Loup garou (${nb})`;
             break;
         case role.villager:
-            imgRole.src = `${asset}/villager-illustration.jpg`;
+            imgRole.src = `${host}/villager-illustration.jpg`;
             pRole.innerText = `Villageoi (${nb})`;
             break;
         case role.youggirl:
-            imgRole.src = `${asset}/younggirl-illustration.jpg`;
+            imgRole.src = `${host}/younggirl-illustration.jpg`;
             pRole.innerText = `Petite fille (${nb})`;
             break;
     }
