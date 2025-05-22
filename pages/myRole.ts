@@ -1,7 +1,7 @@
 /// <reference types="@workadventure/iframe-api-typings" />
 
 import { host } from "../../src/werewolves/variable";
-import { isLeader, isVillager, isWolf, isYoungGirl, role } from "../../src/werewolves/main";
+import { isLeader, isVillager, isWolf, isYoungGirl, role } from "../../src/werewolves";
 
 function initMyRoleCard(){
     const img = document.getElementById('my-role');

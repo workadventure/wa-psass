@@ -1,4 +1,4 @@
-import { isLeader, role } from "../../src/werewolves/main";
+import { isLeader, role } from "../../src/werewolves";
 import { acceptableTimeOut, host } from "../../src/werewolves/variable";
 
 async function addNewAttendee(player){
