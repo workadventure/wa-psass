@@ -2,7 +2,7 @@ import { bootstrapExtra } from "@workadventure/scripting-api-extra";
 import { DayScene } from "./DayScene";
 import { NightScene } from "./NightScene";
 import { RoleScene } from "./RoleScene";
-import { acceptableTimeOut, host, initVariable } from "./variable";
+import { acceptableTimeOut, host, initVariable, resetVariable } from "./variable";
 
 export const role = {
     wolf: "WOLF",
@@ -139,6 +139,9 @@ function initGame(){
         // Add button to ends the game if the current player is the leader
         if(isLeader()) addButtonEndGame();
     }else{
+        // reset all values
+        resetVariable();
+
         // Add button to start the game
         addButtonCreateGame();
     }
@@ -165,6 +168,9 @@ function initGame(){
             toggleDayView(false);
             toggleNightView(false);
 
+            // Reset all variables
+            resetVariable();
+
             // add button create game
             addButtonCreateGame();
         }
@@ -173,7 +179,7 @@ function initGame(){
         console.info("Is the Night", value);
         toggleNightView(value as boolean);
     });
-        WA.state.onVariableChange("day").subscribe((value) => {
+    WA.state.onVariableChange("day").subscribe((value) => {
         console.info("Is the Day", value);
         toggleDayView(value as boolean);
     });

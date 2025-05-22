@@ -11,11 +11,7 @@ export interface RolesState {
 }
 
 export const initVariable = () => {
-    if(WA.player.state.role === undefined) WA.player.state.saveVariable('role', undefined, {
-        public: false,
-        persist: true,
-        scope: 'room',
-    });
+    if(WA.state.startGame === undefined) WA.state.saveVariable("startGame", false);
     if(WA.state.night === undefined) WA.state.saveVariable("night", false);
     if(WA.state.day === undefined) WA.state.saveVariable("day", false);
     if(WA.state.roles === undefined) WA.state.saveVariable("roles", {
@@ -24,4 +20,21 @@ export const initVariable = () => {
         yougGirl: undefined,
         leader: undefined
     });
+}
+
+export const resetVariable = () => {
+    WA.state.saveVariable("night", false);
+    WA.state.saveVariable("day", false);
+    WA.state.saveVariable("roles", {
+        villagers: [],
+        werewolfs: [],
+        yougGirl: undefined,
+        leader: undefined
+    });
+    WA.player.state.saveVariable('role', undefined, {
+        public: false,
+        persist: true,
+        scope: 'room',
+    });
+    WA.state.saveVariable("startGame", false);
 }
