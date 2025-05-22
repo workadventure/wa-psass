@@ -19,7 +19,7 @@ async function addNewAttendee(player){
     imgAvatar.classList.add('w-24');
     imgAvatar.classList.add('h-24');
     imgAvatar.classList.add('rounded-full');
-    imgAvatar.src = "/player-avatar.jpg";
+    imgAvatar.src = `${host}/player-avatar.jpg`;
 
     divAvatar.appendChild(imgAvatar);
     divAvatar.appendChild(pAvatar);
