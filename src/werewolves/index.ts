@@ -67,7 +67,9 @@ function addButtonCreateGame(){
             callback: async () => {
                 await WA.state.saveVariable('leaderUuid', WA.player.uuid);
                 WA.state.startGame = true;
-                openWaitingView();
+                setTimeout(() => {
+                    openWaitingView();
+                }, acceptableTimeOut);
             }
         });
     }, acceptableTimeOut);
