@@ -12,7 +12,7 @@ export class RoleScene {
                 allowApi: true,
                 position: "left",
                 allow: "fullscreen",
-                src: `${host}/pages/myRole.html`,
+                src: `${host}/public/pages/myRole.html`,
                 title: "My Role",
             });
         }, acceptableTimeOut);

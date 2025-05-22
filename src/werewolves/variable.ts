@@ -1,5 +1,5 @@
 // @ts-ignore
-export const host = import.meta.env.MODE == 'development' ? "http://localhost:5173" : "https://werewolves.wa-map-optimizer.com";
+export const host = import.meta.env.MODE == 'development' ? "http://localhost:5173" : "https://workadventure.github.io/wa-psass";
 
 export const acceptableTimeOut = 600;
 

@@ -1,5 +1,5 @@
 import { Sound } from "@workadventure/iframe-api-typings";
-import { isLeader, role } from "./main";
+import { isLeader, role } from ".";
 import { acceptableTimeOut, host } from "./variable";
 
 export class DayScene {

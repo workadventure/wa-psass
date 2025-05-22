@@ -1,3 +1,4 @@
+import { bootstrapExtra } from "@workadventure/scripting-api-extra";
 import { DayScene } from "./DayScene";
 import { NightScene } from "./NightScene";
 import { RoleScene } from "./RoleScene";
@@ -47,7 +48,7 @@ function openWaitingView() {
         allowApi: true,
         position: "center",
         allow: "fullscreen",
-        src: `${host}/pages/waitingRoom.html`,
+        src: `${host}/public/pages/waitingRoom.html`,
         title: "Waiting Room",
     });
 }
@@ -116,7 +117,7 @@ function toggleDayView(toggleValue: boolean) {
     }
 }
 
-export function initGame(){
+function initGame(){
     initVariable();
 
     if( WA.player.state.role != undefined && WA.state.startGame) {
@@ -210,3 +211,18 @@ export function initGame(){
             });
     });
 }
+
+// Waiting for the API to be ready
+WA.onInit().then(() => {
+    console.log('Scripting API ready');
+    
+    // The line below bootstraps the Scripting API Extra library that adds a number of advanced properties/features to WorkAdventure
+    bootstrapExtra().then(async () => {
+        console.log('Scripting API Extra ready');
+        // Init the loup garou game
+        initGame();
+    }).catch(e => console.error(e));
+
+}).catch(e => console.error(e));
+
+export {};
