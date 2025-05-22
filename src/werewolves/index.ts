@@ -67,9 +67,6 @@ function addButtonCreateGame(){
             callback: async () => {
                 await WA.state.saveVariable('leaderUuid', WA.player.uuid);
                 WA.state.startGame = true;
-                setTimeout(() => {
-                    openWaitingView();
-                }, acceptableTimeOut);
             }
         });
     }, acceptableTimeOut);
@@ -187,11 +184,14 @@ function initGame(){
     });
     WA.state.onVariableChange("roles").subscribe((value) => {
         console.log("roles => onVariableChange => ", value);
-        const { villagers, werewolfs, yougGirl, leader } = value as { villagers: any; werewolfs: any; yougGirl: any; leader: any };
+        if(value == undefined) return;
+
+        const { villagers, werewolfs, yougGirl, leader } = value as { villagers: string[]; werewolfs: string[]; yougGirl: string; leader: string };
+        if(leader == undefined || yougGirl == undefined || villagers.length == 0 || werewolfs.length == 0 ) return;
         // Add logic here to handle members and werewolfs
         let role_ = undefined;
-        if(werewolfs.includes(WA.player.uuid)) role_ = role.wolf;
-        else if(villagers.includes(WA.player.uuid)) role_ = role.villager;
+        if(WA.player.uuid != undefined && werewolfs.includes(WA.player.uuid)) role_ = role.wolf;
+        else if(WA.player.uuid != undefined && villagers.includes(WA.player.uuid)) role_ = role.villager;
         else if(yougGirl === WA.player.uuid) role_ = role.youggirl;
         else if(leader === WA.player.uuid) role_ = role.leader;
         WA.player.state.saveVariable('role', role_ ,{

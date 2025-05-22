@@ -25,12 +25,7 @@ export const initVariable = () => {
 export const resetVariable = () => {
     WA.state.saveVariable("night", false);
     WA.state.saveVariable("day", false);
-    WA.state.saveVariable("roles", {
-        villagers: [],
-        werewolfs: [],
-        yougGirl: undefined,
-        leader: undefined
-    });
+    WA.state.saveVariable("roles", undefined);
     WA.player.state.saveVariable('role', undefined, {
         public: false,
         persist: true,
