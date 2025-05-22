@@ -1,5 +1,3 @@
-/// <reference types="@workadventure/iframe-api-typings" />
-
 import { isLeader, role } from "../../src/werewolves/main";
 import { acceptableTimeOut, host } from "../../src/werewolves/variable";
 
