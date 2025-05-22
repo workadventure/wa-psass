@@ -12,8 +12,12 @@ export const role = {
     leader: "LEADER",
 }
 
+export const isAdmin = () => {
+    return WA.player.tags.includes("admin");
+}
+
 export const isLeader = () => {
-    return WA.state.leaderUuid != undefined && WA.state.leaderUuid === WA.player.uuid;
+    return  WA.state.leaderUuid != undefined && WA.state.leaderUuid === WA.player.uuid;
 }
 
 export const isVillager = (role_: string) => {
@@ -63,7 +67,7 @@ function addButtonCreateGame(){
         WA.ui.actionBar.addButton({
             id: 'game-btn',
             // @ts-ignore
-            label: 'Loup garou 🐺',
+            label: 'Loup-Garou 🐺',
             callback: async () => {
                 await WA.state.saveVariable('leaderUuid', WA.player.uuid);
                 WA.state.startGame = true;
@@ -117,6 +121,12 @@ function toggleDayView(toggleValue: boolean) {
 }
 
 function initGame(){
+    console.log("initGame => startGame", WA.state.startGame);
+    console.log("initGame => night", WA.state.night);
+    console.log("initGame => day", WA.state.day);
+    console.log("initGame => roles", WA.state.roles);
+    console.log("initGame => leaderUuid", WA.state.leaderUuid);
+    console.log("initGame => player.role", WA.player.state.role);
     initVariable();
 
     if( WA.player.state.role != undefined && WA.state.startGame) {
@@ -229,6 +239,9 @@ WA.onInit().then(() => {
         console.log('Scripting API Extra ready');
         // Init the loup garou game
         initGame();
+
+        // Add security button for administrator to reset the game
+        if(isAdmin()) WA.ui.registerMenuCommand('Reset Loup-Garou 🐺',{callback: () => resetVariable()});
     }).catch(e => console.error(e));
 
 }).catch(e => console.error(e));

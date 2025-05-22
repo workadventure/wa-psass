@@ -133,7 +133,7 @@ function addNewRole(role_, nb){
             break;
         case role.wolf:
             imgRole.src = `${host}/werewolf-illustration.jpg`;
-            pRole.innerText = `Loup garou (${nb})`;
+            pRole.innerText = `Loup-Garou (${nb})`;
             break;
         case role.villager:
             imgRole.src = `${host}/villager-illustration.jpg`;
