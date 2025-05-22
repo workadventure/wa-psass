@@ -188,6 +188,7 @@ WA.onInit().then(async () => {
     console.info('Initiate Waiting Room');
 
     if(!WA.state.startGame) {
+        console.warn('Game not started');
         WA.ui.modal.closeModal();
         return;
     }
